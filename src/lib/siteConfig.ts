@@ -3,7 +3,7 @@ export const siteConfig = {
   tagline: "Menos tiempo operando. Más tiempo creciendo.",
   description:
     "Automatizamos atención al cliente, seguimiento comercial y operación para negocios locales en Colombia y LATAM.",
-  url: "https://deepchoices.co",
+  url: "https://deepchoices.com",
   email: "hola@deepchoices.com",
   whatsapp: "573054416797",
   location: "Cartagena, Colombia",
