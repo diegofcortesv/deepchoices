@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Eyebrow } from "@/components/ui/Eyebrow";
+import { useState, useRef } from "react";
+import { motion, useInView, AnimatePresence } from "motion/react";
+import { Plus, Minus } from "@phosphor-icons/react";
+
+const ease = [0.16, 1, 0.3, 1] as const;
 
 const FAQS = [
   {
@@ -33,89 +36,95 @@ const FAQS = [
 export function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
   const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const items = el.querySelectorAll<HTMLElement>(".rv");
-    const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); obs.unobserve(e.target); } }),
-      { threshold: 0.1 }
-    );
-    items.forEach((i) => obs.observe(i));
-    return () => obs.disconnect();
-  }, []);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
     <section
       id="faq"
       ref={ref}
-      className="py-24 border-t"
+      className="py-20 lg:py-28 border-t"
       style={{ background: "var(--bg-2)", borderColor: "var(--border)" }}
     >
-      <div className="mx-auto max-w-[1260px] px-9">
+      <div className="mx-auto max-w-[1260px] px-6 sm:px-9">
 
-        <div className="rv mb-11">
-          <Eyebrow>Preguntas frecuentes</Eyebrow>
-          <h2
-            className="font-display font-bold max-w-[26ch]"
-            style={{ fontSize: "clamp(1.8rem, 3.2vw, 2.4rem)", color: "var(--text)" }}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-16 items-start">
+
+          {/* Left: heading */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, ease }}
+            className="lg:sticky lg:top-28"
           >
-            Lo que más preguntan antes de empezar
-          </h2>
-        </div>
-
-        <div className="max-w-[740px]">
-          {FAQS.map((faq, i) => (
-            <div
-              key={faq.q}
-              className="rv border-t"
-              style={{
-                borderColor: "var(--border)",
-                borderBottom: i === FAQS.length - 1 ? "1px solid var(--border)" : undefined,
-              }}
+            <h2
+              className="font-display font-bold leading-[1.1]"
+              style={{ fontSize: "clamp(1.9rem, 3vw, 2.5rem)", color: "var(--text)" }}
             >
-              <button
-                className="w-full text-left py-6 flex items-center justify-between gap-4 transition-colors duration-200"
-                style={{ color: open === i ? "var(--accent)" : "var(--text)" }}
-                aria-expanded={open === i}
-                onClick={() => setOpen(open === i ? null : i)}
+              Lo que más preguntan antes de empezar
+            </h2>
+          </motion.div>
+
+          {/* Right: accordion */}
+          <div className="max-w-[680px]">
+            {FAQS.map((faq, i) => (
+              <motion.div
+                key={faq.q}
+                initial={{ opacity: 0, y: 16 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, ease, delay: i * 0.06 }}
+                className="border-t"
+                style={{
+                  borderColor: "var(--border)",
+                  borderBottom: i === FAQS.length - 1 ? "1px solid var(--border)" : undefined,
+                }}
               >
-                <span className="font-display font-semibold text-[0.95rem]">{faq.q}</span>
-                <span
-                  className="w-6 h-6 rounded-full border flex items-center justify-center flex-shrink-0 transition-all duration-200"
-                  style={{
-                    background: open === i ? "var(--accent)" : "transparent",
-                    borderColor: open === i ? "var(--accent)" : "var(--border)",
-                    transform: open === i ? "rotate(45deg)" : "rotate(0deg)",
-                  }}
+                <button
+                  className="w-full text-left py-5 flex items-center justify-between gap-4 transition-colors duration-200"
+                  style={{ color: open === i ? "var(--accent)" : "var(--text)" }}
+                  aria-expanded={open === i}
+                  onClick={() => setOpen(open === i ? null : i)}
                 >
-                  <svg
-                    width="11" height="11"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    stroke={open === i ? "#F5F3EF" : "var(--text-3)"}
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
+                  <span className="font-display font-semibold" style={{ fontSize: "0.95rem" }}>
+                    {faq.q}
+                  </span>
+                  <span
+                    className="w-6 h-6 rounded-full border flex items-center justify-center flex-shrink-0 transition-all duration-200"
+                    style={{
+                      background: open === i ? "var(--accent)" : "transparent",
+                      borderColor: open === i ? "var(--accent)" : "var(--border)",
+                    }}
                   >
-                    <line x1="6" y1="1" x2="6" y2="11"/>
-                    <line x1="1" y1="6" x2="11" y2="6"/>
-                  </svg>
-                </span>
-              </button>
+                    {open === i
+                      ? <Minus size={10} weight="bold" color="#F0F0EE" />
+                      : <Plus size={10} weight="bold" color="var(--text-3)" />
+                    }
+                  </span>
+                </button>
 
-              {open === i && (
-                <p
-                  className="pb-6 text-sm leading-[1.7] max-w-[62ch]"
-                  style={{ color: "var(--text-2)" }}
-                >
-                  {faq.a}
-                </p>
-              )}
-            </div>
-          ))}
+                <AnimatePresence initial={false}>
+                  {open === i && (
+                    <motion.div
+                      key="answer"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.35, ease }}
+                      style={{ overflow: "hidden" }}
+                    >
+                      <p
+                        className="pb-5 text-sm leading-[1.75]"
+                        style={{ color: "var(--text-2)", maxWidth: "60ch" }}
+                      >
+                        {faq.a}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </div>
+
         </div>
-
       </div>
     </section>
   );

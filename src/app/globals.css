@@ -2,9 +2,10 @@
 
 /* ================================================================
    DESIGN TOKENS
-   taste-skill: DESIGN_VARIANCE:6 | MOTION_INTENSITY:4 | VISUAL_DENSITY:4
-   Palette: stone warm + teal profundo. No purple/cyan/AI glow.
-   Fonts: Outfit (display) + DM Sans (body).
+   impeccable/taste: DESIGN_VARIANCE:8 | MOTION_INTENSITY:7 | VISUAL_DENSITY:4
+   Strategy: Forest-drench hero (dark teal hero) + cool-neutral body
+   Fonts: Bricolage Grotesque (display) + Geist (body)
+   Reference: bold b2b agency precision, NOT warm-cream AI landing
 ================================================================ */
 
 /* ----------------------------------------------------------------
@@ -12,33 +13,48 @@
 ---------------------------------------------------------------- */
 :root,
 [data-theme="light"] {
-  --bg:        #F5F3EF;
-  --bg-2:      #EDEBE6;
-  --bg-3:      #E5E2DB;
-  --surface:   #FAFAF7;
-  --text:      #1C1B18;
-  --text-2:    #5A5953;
-  --text-3:    #8A8880;
+  --bg:        #F5F5F4;
+  --bg-2:      #EEEEEC;
+  --bg-3:      #E6E6E4;
+  --surface:   #FFFFFF;
+  --text:      #141413;
+  --text-2:    #525250;
+  --text-3:    #8A8A88;
   --accent:    #1A5C52;
   --accent-dk: #124540;
-  --accent-lt: #EAF3F1;
-  --border:    #D9D6CF;
-  --border-2:  #E8E5DE;
+  --accent-lt: #E6F2F0;
+  --border:    #DDDDD9;
+  --border-2:  #E8E8E6;
+
+  /* hero drench tokens (fixed regardless of theme) */
+  --hero-bg:       #0C1210;
+  --hero-surface:  #121A18;
+  --hero-text:     #F0F0EE;
+  --hero-text-2:   rgba(240,240,238,0.58);
+  --hero-accent:   #2A9082;
+  --hero-border:   rgba(255,255,255,0.09);
 }
 
 [data-theme="dark"] {
-  --bg:        #111210;
-  --bg-2:      #191917;
-  --bg-3:      #212120;
-  --surface:   #1C1C1A;
-  --text:      #F0EFE9;
-  --text-2:    #A6A5A0;
-  --text-3:    #686762;
-  --accent:    #2A8272;
-  --accent-dk: #36A090;
-  --accent-lt: #192B28;
-  --border:    #2A2A28;
-  --border-2:  #242422;
+  --bg:        #0C0D0C;
+  --bg-2:      #141513;
+  --bg-3:      #1C1D1B;
+  --surface:   #181917;
+  --text:      #F0F0EE;
+  --text-2:    #9A9A98;
+  --text-3:    #616160;
+  --accent:    #2A9082;
+  --accent-dk: #38B09E;
+  --accent-lt: #162422;
+  --border:    #252523;
+  --border-2:  #1F201E;
+
+  --hero-bg:       #0C1210;
+  --hero-surface:  #121A18;
+  --hero-text:     #F0F0EE;
+  --hero-text-2:   rgba(240,240,238,0.58);
+  --hero-accent:   #2A9082;
+  --hero-border:   rgba(255,255,255,0.09);
 }
 
 /* ----------------------------------------------------------------
@@ -53,42 +69,76 @@ html { scroll-behavior: smooth; }
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: "DM Sans", system-ui, sans-serif;
+  font-family: var(--font-body, "Geist"), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Outfit", system-ui, sans-serif;
-  letter-spacing: -0.022em;
-  line-height: 1.12;
+  font-family: var(--font-display, "Bricolage Grotesque"), system-ui, sans-serif;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  text-wrap: balance;
 }
 
+p { text-wrap: pretty; }
+
 /* ----------------------------------------------------------------
-   SCROLL REVEAL
+   SCROLL REVEAL — used as motion fallback / non-hero sections
+   motion/react handles hero. CSS handles the rest.
 ---------------------------------------------------------------- */
 @media (prefers-reduced-motion: no-preference) {
   .rv {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(20px);
     transition:
-      opacity   0.55s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity   0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .rv.in { opacity: 1; transform: none; }
-  .rv.d1 { transition-delay: 0.08s; }
-  .rv.d2 { transition-delay: 0.16s; }
-  .rv.d3 { transition-delay: 0.24s; }
+  .rv.d1 { transition-delay: 0.1s; }
+  .rv.d2 { transition-delay: 0.2s; }
+  .rv.d3 { transition-delay: 0.3s; }
+  .rv.d4 { transition-delay: 0.4s; }
 }
 
-/* Hero node pulse */
+/* ----------------------------------------------------------------
+   HERO DIAGRAM — node pulse animations
+---------------------------------------------------------------- */
 @media (prefers-reduced-motion: no-preference) {
   .np1 { animation: npa 3.2s ease-in-out infinite; }
   .np2 { animation: npa 3.2s ease-in-out 1.1s infinite; }
   .np3 { animation: npa 3.2s ease-in-out 2.1s infinite; }
+  .np4 { animation: npa 3.2s ease-in-out 0.6s infinite; }
 
   @keyframes npa {
-    0%, 100% { opacity: 0.45; }
+    0%, 100% { opacity: 0.4; }
     50%       { opacity: 1; }
   }
+
+  /* Animated dashes on hero paths */
+  .path-anim {
+    stroke-dashoffset: 200;
+    animation: dash-flow 3s linear infinite;
+  }
+
+  @keyframes dash-flow {
+    to { stroke-dashoffset: 0; }
+  }
+}
+
+/* ----------------------------------------------------------------
+   MARQUEE / TICKER (sectores strip)
+---------------------------------------------------------------- */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-inner {
+  display: flex;
+  width: max-content;
+  animation: marquee 18s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-inner { animation: none; }
 }

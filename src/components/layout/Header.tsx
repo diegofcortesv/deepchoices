@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/Button";
 import { siteConfig } from "@/lib/siteConfig";
 import { LogoMark } from "@/components/ui/LogoMark";
+import { Sun, Moon, List, X } from "@phosphor-icons/react";
 
 export function Header() {
   const [scrolled, setScrolled]   = useState(false);
@@ -32,11 +33,10 @@ export function Header() {
         className="fixed inset-x-0 top-0 z-50 h-[72px] transition-all duration-300"
         style={{
           background: scrolled
-            ? "color-mix(in srgb, var(--bg) 90%, transparent)"
-            : "var(--bg)",
-          borderBottom: scrolled
-            ? "1px solid var(--border)"
-            : "1px solid transparent",
+            ? "color-mix(in srgb, var(--bg) 92%, transparent)"
+            : "var(--hero-bg)",
+          borderBottom: "1px solid",
+          borderColor: scrolled ? "var(--border)" : "var(--hero-border)",
           backdropFilter: scrolled ? "blur(14px)" : "none",
         }}
       >
@@ -47,7 +47,7 @@ export function Header() {
             <LogoMark className="w-[26px] h-[26px]" />
             <span
               className="font-display font-semibold text-[1rem] tracking-[-0.02em]"
-              style={{ color: "var(--text)" }}
+              style={{ color: scrolled ? "var(--text)" : "var(--hero-text)" }}
             >
               DeepChoices
             </span>
@@ -60,13 +60,13 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className="text-[0.875rem] font-medium px-3.5 py-1.5 rounded-full transition-all duration-200"
-                style={{ color: "var(--text-2)" }}
+                style={{ color: scrolled ? "var(--text-2)" : "var(--hero-text-2)" }}
                 onMouseEnter={(e) => {
-                  (e.target as HTMLElement).style.color = "var(--text)";
-                  (e.target as HTMLElement).style.background = "var(--bg-2)";
+                  (e.target as HTMLElement).style.color = scrolled ? "var(--text)" : "var(--hero-text)";
+                  (e.target as HTMLElement).style.background = scrolled ? "var(--bg-2)" : "rgba(255,255,255,0.08)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.target as HTMLElement).style.color = "var(--text-2)";
+                  (e.target as HTMLElement).style.color = scrolled ? "var(--text-2)" : "var(--hero-text-2)";
                   (e.target as HTMLElement).style.background = "transparent";
                 }}
               >
@@ -82,12 +82,12 @@ export function Header() {
               onClick={toggleTheme}
               aria-label="Cambiar modo de color"
               className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-[--bg-2]"
-              style={{ color: "var(--text-2)" }}
+              style={{ color: scrolled ? "var(--text-2)" : "var(--hero-text-2)" }}
             >
               {mounted && resolvedTheme === "dark" ? (
-                <SunIcon />
+                <Sun size={17} />
               ) : (
-                <MoonIcon />
+                <Moon size={17} />
               )}
             </button>
 
@@ -99,12 +99,12 @@ export function Header() {
             {/* Hamburger — mobile */}
             <button
               className="flex md:hidden w-9 h-9 items-center justify-center rounded-lg transition-all duration-200 hover:bg-[--bg-2]"
-              style={{ color: "var(--text-2)" }}
+              style={{ color: scrolled ? "var(--text-2)" : "var(--hero-text-2)" }}
               aria-label="Abrir menú"
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((o) => !o)}
             >
-              <HamburgerIcon open={menuOpen} />
+              {menuOpen ? <X size={20} /> : <List size={20} />}
             </button>
           </div>
         </div>
@@ -137,36 +137,3 @@ export function Header() {
   );
 }
 
-/* ---- Icons ---- */
-function SunIcon() {
-  return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-      <circle cx="12" cy="12" r="4"/>
-      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-    </svg>
-  );
-}
-
-function MoonIcon() {
-  return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-    </svg>
-  );
-}
-
-function HamburgerIcon({ open }: { open: boolean }) {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-      {open ? (
-        <>
-          <path d="M4 4l12 12M16 4l-12 12"/>
-        </>
-      ) : (
-        <>
-          <path d="M3 5h14M3 10h14M3 15h14"/>
-        </>
-      )}
-    </svg>
-  );
-}

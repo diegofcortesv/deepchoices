@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { motion, useInView } from "motion/react";
+
+const ease = [0.16, 1, 0.3, 1] as const;
 
 const PROBLEMAS = [
   {
@@ -37,67 +40,64 @@ const PROBLEMAS = [
 
 export function Problema() {
   const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const items = el.querySelectorAll<HTMLElement>(".rv");
-    const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); obs.unobserve(e.target); } }),
-      { threshold: 0.1 }
-    );
-    items.forEach((i) => obs.observe(i));
-    return () => obs.disconnect();
-  }, []);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
     <section
       id="problema"
       ref={ref}
-      className="border-t border-b py-24"
+      className="border-t border-b py-20 lg:py-28"
       style={{ background: "var(--bg-2)", borderColor: "var(--border)" }}
     >
-      <div className="mx-auto max-w-[1260px] px-9">
-        <h2
-          className="rv font-display font-bold mb-14 max-w-[22ch]"
-          style={{ fontSize: "clamp(1.8rem, 3.2vw, 2.4rem)", color: "var(--text)" }}
+      <div className="mx-auto max-w-[1260px] px-6 sm:px-9">
+
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease }}
+          className="font-display font-bold mb-14"
+          style={{ fontSize: "clamp(1.9rem, 3.5vw, 2.8rem)", color: "var(--text)", maxWidth: "22ch" }}
         >
           El costo invisible de operar en modo manual
-        </h2>
+        </motion.h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2">
           {PROBLEMAS.map((p, i) => (
-            <div
+            <motion.div
               key={p.num}
-              className={`rv${i % 2 === 1 ? " d1" : ""} grid gap-4 py-7 border-t`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, ease, delay: i * 0.07 }}
+              className="grid gap-4 py-7 border-t"
               style={{
-                gridTemplateColumns: "40px 1fr",
+                gridTemplateColumns: "44px 1fr",
                 borderColor: "var(--border)",
-                paddingRight: i % 2 === 0 ? "40px" : undefined,
-                paddingLeft: i % 2 === 1 ? "40px" : undefined,
+                paddingRight: i % 2 === 0 ? "2.5rem" : undefined,
+                paddingLeft: i % 2 === 1 ? "2.5rem" : undefined,
                 borderLeft: i % 2 === 1 ? "1px solid var(--border)" : undefined,
               }}
             >
               <span
-                className="font-display text-[0.68rem] font-semibold tracking-[0.08em] pt-0.5"
+                className="font-display text-[0.65rem] font-bold tracking-[0.1em] pt-0.5"
                 style={{ color: "var(--accent)" }}
               >
                 {p.num}
               </span>
               <div>
                 <p
-                  className="font-display text-[0.95rem] font-semibold mb-1.5"
-                  style={{ color: "var(--text)" }}
+                  className="font-display font-semibold mb-1.5"
+                  style={{ fontSize: "0.97rem", color: "var(--text)" }}
                 >
                   {p.title}
                 </p>
-                <p className="text-sm leading-[1.6]" style={{ color: "var(--text-2)" }}>
+                <p className="text-sm leading-[1.65]" style={{ color: "var(--text-2)" }}>
                   {p.desc}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
+
       </div>
     </section>
   );

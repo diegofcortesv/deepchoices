@@ -1,100 +1,175 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/Button";
+import { ArrowRight, Lightning, CheckCircle } from "@phosphor-icons/react";
 
-const TRUST_PILLS = ["Gimnasios", "Restaurantes", "Retail", "Servicios locales"];
+const ease = [0.16, 1, 0.3, 1] as const;
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 28 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.7, ease } },
+};
+
+const fadeIn = {
+  hidden: { opacity: 0 },
+  show:   { opacity: 1, transition: { duration: 0.9, ease } },
+};
+
+const SECTORS = ["Gimnasios", "Restaurantes", "Retail", "Servicios locales", "Salud y bienestar"];
 
 export function Hero() {
-  const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const items = el.querySelectorAll<HTMLElement>(".rv");
-    if (!("IntersectionObserver" in window)) {
-      items.forEach((i) => i.classList.add("in"));
-      return;
-    }
-    const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); obs.unobserve(e.target); } }),
-      { threshold: 0.1 }
-    );
-    items.forEach((i) => obs.observe(i));
-    return () => obs.disconnect();
-  }, []);
+  const containerRef = useRef<HTMLElement>(null);
 
   return (
     <section
       id="hero"
-      ref={ref}
-      className="flex items-center"
-      style={{ minHeight: "100dvh", paddingTop: "72px" }}
+      ref={containerRef}
+      style={{
+        minHeight: "100dvh",
+        paddingTop: "64px",
+        background: "var(--hero-bg)",
+        position: "relative",
+        overflow: "hidden",
+      }}
     >
-      <div className="mx-auto w-full max-w-[1260px] px-9">
-        <div className="grid grid-cols-1 lg:grid-cols-[55fr_45fr] gap-14 items-center py-20 lg:py-24">
+      {/* Subtle teal glow — brand color only, not AI purple */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: "-20%",
+          right: "-10%",
+          width: "60vw",
+          height: "60vw",
+          maxWidth: 900,
+          maxHeight: 900,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(26,92,82,0.18) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }}
+      />
 
-          {/* Left: copy */}
-          <div className="max-w-[560px]">
-            <h1
-              className="rv font-display font-bold tracking-[-0.03em] leading-[1.07] mb-6"
+      <div className="mx-auto w-full max-w-[1260px] px-6 sm:px-9">
+        <motion.div
+          variants={stagger}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-12 lg:gap-16 items-center py-20 lg:py-28"
+        >
+          {/* LEFT: copy */}
+          <div>
+            <motion.div variants={fadeUp} className="mb-6 inline-flex items-center gap-2">
+              <span
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium"
+                style={{
+                  border: "1px solid var(--hero-border)",
+                  color: "var(--hero-accent)",
+                  background: "rgba(42,144,130,0.1)",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                <Lightning size={11} weight="fill" />
+                Boutique de automatización para pymes
+              </span>
+            </motion.div>
+
+            <motion.h1
+              variants={fadeUp}
+              className="font-display font-bold leading-[1.05] mb-6"
               style={{
-                fontSize: "clamp(2.6rem, 5vw, 3.8rem)",
-                color: "var(--text)",
+                fontSize: "clamp(2.8rem, 5.5vw, 4.5rem)",
+                letterSpacing: "-0.03em",
+                color: "var(--hero-text)",
+                maxWidth: "14ch",
               }}
             >
               Menos tiempo operando.{" "}
-              <br className="hidden sm:block" />
-              Más tiempo{" "}
-              <em className="not-italic" style={{ color: "var(--accent)" }}>
-                creciendo.
-              </em>
-            </h1>
+              <span style={{ color: "var(--hero-accent)" }}>
+                Más tiempo creciendo.
+              </span>
+            </motion.h1>
 
-            <p
-              className="rv d1 text-[1.05rem] leading-[1.65] mb-8 max-w-[44ch]"
-              style={{ color: "var(--text-2)" }}
+            <motion.p
+              variants={fadeUp}
+              className="leading-[1.7] mb-8"
+              style={{
+                fontSize: "1.08rem",
+                color: "var(--hero-text-2)",
+                maxWidth: "42ch",
+              }}
             >
               Automatizamos atención, seguimiento y operación para que tu negocio venda más con menos carga manual.
-            </p>
+            </motion.p>
 
-            <div className="rv d2 flex flex-wrap items-center gap-2.5 mb-10">
-              <Button href="#cta">Solicitar diagnóstico</Button>
-              <Button href="#soluciones" variant="ghost">Ver soluciones</Button>
-            </div>
-
-            <div className="rv d3 flex flex-wrap items-center gap-3.5">
-              <span
-                className="text-[0.7rem] font-medium tracking-[0.07em] uppercase"
-                style={{ color: "var(--text-3)" }}
+            <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-3 mb-10">
+              <Button href="#cta">
+                Solicitar diagnóstico
+                <ArrowRight size={15} weight="bold" />
+              </Button>
+              <Button
+                href="#soluciones"
+                variant="ghost"
+                style={{
+                  borderColor: "var(--hero-border)",
+                  color: "var(--hero-text)",
+                }}
               >
-                Para
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {TRUST_PILLS.map((p) => (
-                  <span
-                    key={p}
-                    className="text-[0.75rem] font-medium px-3 py-1 rounded-full border"
-                    style={{
-                      color: "var(--text-2)",
-                      background: "var(--bg-2)",
-                      borderColor: "var(--border)",
-                    }}
-                  >
-                    {p}
-                  </span>
-                ))}
-              </div>
-            </div>
+                Ver soluciones
+              </Button>
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              {["Diagnóstico gratuito", "Sin permanencia mínima", "Resultados en semanas"].map((t) => (
+                <span
+                  key={t}
+                  className="flex items-center gap-1.5 text-xs font-medium"
+                  style={{ color: "var(--hero-text-2)" }}
+                >
+                  <CheckCircle size={13} weight="fill" style={{ color: "var(--hero-accent)" }} />
+                  {t}
+                </span>
+              ))}
+            </motion.div>
           </div>
 
-          {/* Right: abstract SVG diagram */}
-          <div className="rv d2 flex justify-center lg:justify-end">
-            <div className="w-full max-w-[480px]">
-              <HeroDiagram />
-            </div>
-          </div>
+          {/* RIGHT: animated diagram */}
+          <motion.div
+            variants={fadeIn}
+            className="flex justify-center lg:justify-end"
+          >
+            <HeroDiagram />
+          </motion.div>
+        </motion.div>
+      </div>
 
+      {/* Sector ticker */}
+      <div
+        className="absolute bottom-0 left-0 right-0 overflow-hidden"
+        style={{
+          borderTop: "1px solid var(--hero-border)",
+          padding: "14px 0",
+          background: "rgba(12,18,16,0.7)",
+          backdropFilter: "blur(8px)",
+        }}
+      >
+        <div className="marquee-inner select-none" aria-hidden="true">
+          {[...SECTORS, ...SECTORS, ...SECTORS, ...SECTORS].map((s, i) => (
+            <span
+              key={i}
+              className="flex items-center gap-3 px-6 text-xs font-medium uppercase tracking-widest"
+              style={{ color: "var(--hero-text-2)", whiteSpace: "nowrap" }}
+            >
+              {s}
+              <span style={{ color: "var(--hero-accent)", fontSize: 10 }}>◆</span>
+            </span>
+          ))}
         </div>
       </div>
     </section>
@@ -104,91 +179,112 @@ export function Hero() {
 function HeroDiagram() {
   return (
     <svg
-      viewBox="0 0 480 360"
+      viewBox="0 0 400 480"
       fill="none"
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
+      style={{ width: "100%", maxWidth: 380 }}
     >
+      {/* Background card */}
+      <rect
+        x="12" y="12" width="376" height="456"
+        rx="20"
+        fill="var(--hero-surface)"
+        stroke="var(--hero-border)"
+        strokeWidth="1"
+      />
+
       {/* Grid dots */}
-      <g opacity=".12">
-        {[48,128,208,288,368,432].map((x) =>
-          [48,128,208,288,340].map((y) => (
-            <circle key={`${x}-${y}`} cx={x} cy={y} r="2.2" fill="var(--text-2)"/>
+      <g opacity=".08">
+        {[60,120,180,240,300,360].map((x) =>
+          [60,120,180,240,300,360,420].map((y) => (
+            y < 460 ? <circle key={`${x}-${y}`} cx={x} cy={y} r="1.5" fill="var(--hero-text)" /> : null
           ))
         )}
       </g>
 
-      {/* Passive lines */}
-      <g stroke="var(--border)" strokeWidth="1">
-        <line x1="108" y1="88"  x2="168" y2="88"/>
-        <line x1="168" y1="88"  x2="280" y2="170"/>
-        <line x1="108" y1="168" x2="168" y2="88"/>
-        <line x1="360" y1="130" x2="400" y2="220"/>
-        <line x1="168" y1="250" x2="260" y2="308"/>
-        <line x1="260" y1="308" x2="360" y2="220"/>
+      {/* Connection lines */}
+      <g stroke="rgba(255,255,255,0.08)" strokeWidth="1">
+        <line x1="100" y1="110" x2="200" y2="110"/>
+        <line x1="200" y1="110" x2="300" y2="200"/>
+        <line x1="100" y1="200" x2="200" y2="110"/>
+        <line x1="300" y1="320" x2="200" y2="370"/>
+        <line x1="100" y1="290" x2="200" y2="370"/>
       </g>
 
-      {/* Active path */}
-      <g stroke="var(--accent)" strokeWidth="1.5" opacity=".55" strokeDasharray="5 4">
-        <line x1="96"  y1="88"  x2="196" y2="88"/>
-        <line x1="196" y1="88"  x2="304" y2="168"/>
-        <line x1="304" y1="168" x2="268" y2="308"/>
-        <line x1="268" y1="308" x2="392" y2="308"/>
-      </g>
+      {/* Active path — animated dashes */}
+      <path
+        d="M100,110 L200,110 L300,200 L200,370 L300,320"
+        stroke="var(--hero-accent)"
+        strokeWidth="1.5"
+        strokeDasharray="6 5"
+        className="path-anim"
+        opacity=".6"
+        fill="none"
+      />
 
-      {/* Node: Atención/WhatsApp */}
+      {/* Node: Atención */}
       <g className="np1">
-        <circle cx="96" cy="88" r="24" fill="var(--accent)" opacity=".12"/>
-        <circle cx="96" cy="88" r="16" fill="var(--accent)"/>
-        <rect x="88" y="81" width="16" height="11" rx="2.5" stroke="#F5F3EF" strokeWidth="1.3" fill="none"/>
-        <path d="M88 90l-4 4 5-1.5" stroke="#F5F3EF" strokeWidth="1.3" strokeLinecap="round"/>
+        <circle cx="100" cy="110" r="30" fill="var(--hero-accent)" opacity=".12"/>
+        <circle cx="100" cy="110" r="20" fill="var(--hero-accent)"/>
+        <rect x="91" y="103" width="17" height="12" rx="3" stroke="#F0F0EE" strokeWidth="1.2" fill="none"/>
+        <path d="M92 113l-4 5 5.5-1.8" stroke="#F0F0EE" strokeWidth="1.2" strokeLinecap="round"/>
       </g>
 
       {/* Node: Seguimiento */}
       <g className="np2">
-        <circle cx="196" cy="88" r="20" fill="var(--accent)" opacity=".1"/>
-        <circle cx="196" cy="88" r="13" fill="var(--accent)" opacity=".75"/>
-        <path d="M191 88l4 4 6-6" stroke="#F5F3EF" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="200" cy="110" r="26" fill="var(--hero-accent)" opacity=".1"/>
+        <circle cx="200" cy="110" r="17" fill="var(--hero-accent)" opacity=".8"/>
+        <path d="M194 110l4.5 4.5 7-7" stroke="#F0F0EE" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
       </g>
 
-      {/* Node: Agendamiento */}
+      {/* Node: Agenda */}
       <g>
-        <circle cx="304" cy="168" r="22" fill="var(--accent)" opacity=".12"/>
-        <circle cx="304" cy="168" r="15" fill="var(--accent)"/>
-        <rect x="296" y="162" width="16" height="12" rx="2" stroke="#F5F3EF" strokeWidth="1.2" fill="none"/>
-        <line x1="299.5" y1="160" x2="299.5" y2="165" stroke="#F5F3EF" strokeWidth="1.2" strokeLinecap="round"/>
-        <line x1="308.5" y1="160" x2="308.5" y2="165" stroke="#F5F3EF" strokeWidth="1.2" strokeLinecap="round"/>
-        <line x1="296" y1="168" x2="312" y2="168" stroke="#F5F3EF" strokeWidth="1" opacity=".55"/>
+        <circle cx="300" cy="200" r="26" fill="var(--hero-accent)" opacity=".12"/>
+        <circle cx="300" cy="200" r="18" fill="var(--hero-accent)"/>
+        <rect x="290" y="193" width="18" height="14" rx="2.5" stroke="#F0F0EE" strokeWidth="1.2" fill="none"/>
+        <line x1="294" y1="191" x2="294" y2="196" stroke="#F0F0EE" strokeWidth="1.2" strokeLinecap="round"/>
+        <line x1="306" y1="191" x2="306" y2="196" stroke="#F0F0EE" strokeWidth="1.2" strokeLinecap="round"/>
+        <line x1="290" y1="200" x2="308" y2="200" stroke="#F0F0EE" strokeWidth="1" opacity=".45"/>
       </g>
 
       {/* Node: Analítica */}
       <g className="np3">
-        <circle cx="268" cy="308" r="28" fill="var(--accent)" opacity=".12"/>
-        <circle cx="268" cy="308" r="19" fill="var(--accent)"/>
-        <rect x="260" y="312" width="4" height="5"  fill="#F5F3EF" opacity=".9" rx="1"/>
-        <rect x="266" y="307" width="4" height="10" fill="#F5F3EF" opacity=".9" rx="1"/>
-        <rect x="272" y="302" width="4" height="15" fill="#F5F3EF" opacity=".9" rx="1"/>
+        <circle cx="200" cy="370" r="32" fill="var(--hero-accent)" opacity=".12"/>
+        <circle cx="200" cy="370" r="21" fill="var(--hero-accent)"/>
+        <rect x="191" y="374" width="5" height="6"  fill="#F0F0EE" opacity=".9" rx="1"/>
+        <rect x="198" y="368" width="5" height="12" fill="#F0F0EE" opacity=".9" rx="1"/>
+        <rect x="205" y="362" width="5" height="18" fill="#F0F0EE" opacity=".9" rx="1"/>
       </g>
 
       {/* Node: Operación */}
-      <g>
-        <circle cx="392" cy="308" r="19" fill="var(--bg-3)" stroke="var(--border)" strokeWidth="1"/>
-        <circle cx="392" cy="308" r="11" fill="var(--accent)" opacity=".22"/>
-        <path d="M388 308h8M392 304v8" stroke="var(--accent)" strokeWidth="1.6" strokeLinecap="round"/>
+      <g className="np4">
+        <circle cx="300" cy="320" r="22" fill="rgba(255,255,255,0.04)" stroke="var(--hero-border)" strokeWidth="1.2"/>
+        <circle cx="300" cy="320" r="12" fill="var(--hero-accent)" opacity=".25"/>
+        <path d="M295 320h10M300 315v10" stroke="var(--hero-accent)" strokeWidth="1.8" strokeLinecap="round"/>
       </g>
 
-      {/* Secondary nodes */}
-      <circle cx="168" cy="250" r="7" fill="var(--accent)" opacity=".3"/>
-      <circle cx="108" cy="168" r="7" fill="var(--bg-3)" stroke="var(--border)" strokeWidth="1"/>
+      <circle cx="100" cy="200" r="8" fill="var(--hero-accent)" opacity=".3"/>
+      <circle cx="100" cy="290" r="6" fill="rgba(255,255,255,0.08)" stroke="var(--hero-border)" strokeWidth="1"/>
 
       {/* Labels */}
-      <g fontFamily="DM Sans, sans-serif" fontSize="9.5" fill="var(--text-2)" opacity=".65" textAnchor="middle">
-        <text x="96"  y="118">Atención</text>
-        <text x="196" y="114">Seguimiento</text>
-        <text x="304" y="197">Agendamiento</text>
-        <text x="268" y="342">Analítica</text>
-        <text x="392" y="336">Operación</text>
+      <g fontFamily="system-ui" fontSize="9" fill="var(--hero-text-2)" textAnchor="middle">
+        <text x="100" y="148">Atención</text>
+        <text x="200" y="142">Seguimiento</text>
+        <text x="300" y="234">Agenda</text>
+        <text x="200" y="406">Analítica</text>
+        <text x="300" y="354">Operación</text>
       </g>
+
+      {/* Top stat card */}
+      <rect x="36" y="36" width="130" height="52" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--hero-border)" strokeWidth="1"/>
+      <text x="50" y="56" fontFamily="system-ui" fontSize="18" fontWeight="700" fill="var(--hero-accent)">24/7</text>
+      <text x="50" y="72" fontFamily="system-ui" fontSize="8.5" fill="var(--hero-text-2)" opacity=".7">Atención automatizada</text>
+
+      {/* Bottom stat card */}
+      <rect x="246" y="400" width="120" height="48" rx="10" fill="rgba(255,255,255,0.04)" stroke="var(--hero-border)" strokeWidth="1"/>
+      <text x="258" y="421" fontFamily="system-ui" fontSize="16" fontWeight="700" fill="var(--hero-accent)">2-4 sem.</text>
+      <text x="258" y="436" fontFamily="system-ui" fontSize="8.5" fill="var(--hero-text-2)" opacity=".7">Tiempo de entrega</text>
     </svg>
   );
 }

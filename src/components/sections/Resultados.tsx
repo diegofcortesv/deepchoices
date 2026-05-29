@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
+import { motion, useInView } from "motion/react";
+
+const ease = [0.16, 1, 0.3, 1] as const;
 
 const RESULTADOS = [
   {
@@ -22,56 +25,50 @@ const RESULTADOS = [
 
 export function Resultados() {
   const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const items = el.querySelectorAll<HTMLElement>(".rv");
-    const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); obs.unobserve(e.target); } }),
-      { threshold: 0.1 }
-    );
-    items.forEach((i) => obs.observe(i));
-    return () => obs.disconnect();
-  }, []);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="resultados" ref={ref} className="py-24">
-      <div className="mx-auto max-w-[1260px] px-9">
+    <section id="resultados" ref={ref} className="py-20 lg:py-28 border-t" style={{ borderColor: "var(--border)" }}>
+      <div className="mx-auto max-w-[1260px] px-6 sm:px-9">
 
-        <h2
-          className="rv font-display font-bold mb-14 max-w-[26ch]"
-          style={{ fontSize: "clamp(1.8rem, 3.2vw, 2.4rem)", color: "var(--text)" }}
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease }}
+          className="font-display font-bold mb-16"
+          style={{ fontSize: "clamp(1.9rem, 3.5vw, 2.8rem)", color: "var(--text)", maxWidth: "26ch" }}
         >
           Lo que cambia cuando la operación se ordena
-        </h2>
+        </motion.h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3">
           {RESULTADOS.map((r, i) => (
-            <div
+            <motion.div
               key={r.label}
-              className={`rv${i > 0 ? ` d${i}` : ""}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, ease, delay: i * 0.1 }}
               style={{
-                padding: i === 0 ? "0 52px 0 0" : i === 1 ? "0 52px" : "0 0 0 52px",
+                padding: i === 0 ? "0 3rem 0 0" : i === 1 ? "0 3rem" : "0 0 0 3rem",
                 borderRight: i < 2 ? "1px solid var(--border)" : undefined,
               }}
             >
               <div
                 className="font-display font-bold mb-2.5 leading-none"
-                style={{ fontSize: "1.85rem", color: "var(--accent)" }}
+                style={{ fontSize: "1.9rem", color: "var(--accent)" }}
               >
                 {r.metric}
               </div>
               <h3
-                className="font-display font-semibold text-[0.95rem] mb-2"
-                style={{ color: "var(--text)" }}
+                className="font-display font-semibold mb-2"
+                style={{ fontSize: "0.95rem", color: "var(--text)" }}
               >
                 {r.label}
               </h3>
-              <p className="text-[0.85rem] leading-[1.6]" style={{ color: "var(--text-2)" }}>
+              <p className="text-[0.85rem] leading-[1.65]" style={{ color: "var(--text-2)" }}>
                 {r.desc}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
 

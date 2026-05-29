@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Outfit, DM_Sans } from "next/font/google";
+import { Bricolage_Grotesque, Geist } from "next/font/google";
 import { ThemeProvider } from "@/components/layout/ThemeProvider";
 import "./globals.css";
 
-const outfit = Outfit({
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
+  axes: ["opsz", "wdth"],
 });
 
-const dmSans = DM_Sans({
+const geist = Geist({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
@@ -58,7 +59,7 @@ export default function RootLayout({
     <html
       lang="es"
       suppressHydrationWarning
-      className={`${outfit.variable} ${dmSans.variable} h-full`}
+      className={`${bricolage.variable} ${geist.variable} h-full`}
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>{children}</ThemeProvider>

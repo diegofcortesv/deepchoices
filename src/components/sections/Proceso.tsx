@@ -1,109 +1,113 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { Eyebrow } from "@/components/ui/Eyebrow";
+import { useRef } from "react";
+import { motion, useInView } from "motion/react";
+import { MagnifyingGlass, Wrench, Rocket, ArrowsClockwise } from "@phosphor-icons/react";
+
+const ease = [0.16, 1, 0.3, 1] as const;
 
 const STEPS = [
   {
-    label: "Paso 01",
+    num: "01",
     title: "Diagnóstico",
-    desc: "Entendemos tu operación real: cómo llegan los clientes, cuáles son los cuellos de botella, qué se hace a mano y qué herramientas ya tienes. Sin compromiso.",
+    desc: "Entendemos tu operación real: cómo llegan los clientes, los cuellos de botella, qué se hace a mano y qué herramientas ya tienes. Sin compromiso.",
+    Icon: MagnifyingGlass,
     active: true,
   },
   {
-    label: "Paso 02",
+    num: "02",
     title: "Diseño de solución",
     desc: "Proponemos qué se automatiza, con qué herramientas y qué resultados esperar. Nada genérico: cada solución parte de tu caso específico.",
+    Icon: Wrench,
     active: true,
   },
   {
-    label: "Paso 03",
+    num: "03",
     title: "Implementación",
     desc: "Construimos e integramos la solución en tu operación actual. Capacitamos al equipo y validamos que todo funcione antes de salir en producción.",
+    Icon: Rocket,
     active: false,
   },
   {
-    label: "Paso 04",
+    num: "04",
     title: "Mejora continua",
     desc: "Hacemos seguimiento post-implementación, ajustamos lo que necesita ajuste y expandimos la automatización cuando el negocio crece o cambia.",
+    Icon: ArrowsClockwise,
     active: false,
   },
 ];
 
 export function Proceso() {
   const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const items = el.querySelectorAll<HTMLElement>(".rv");
-    const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); obs.unobserve(e.target); } }),
-      { threshold: 0.1 }
-    );
-    items.forEach((i) => obs.observe(i));
-    return () => obs.disconnect();
-  }, []);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="proceso" ref={ref} className="py-24">
-      <div className="mx-auto max-w-[1260px] px-9">
+    <section id="proceso" ref={ref} className="py-20 lg:py-28 border-t" style={{ borderColor: "var(--border)" }}>
+      <div className="mx-auto max-w-[1260px] px-6 sm:px-9">
 
-        <div className="rv mb-16">
-          <Eyebrow>Cómo trabajamos</Eyebrow>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease }}
+          className="mb-16"
+        >
           <h2
-            className="font-display font-bold max-w-[26ch]"
-            style={{ fontSize: "clamp(1.8rem, 3.2vw, 2.4rem)", color: "var(--text)" }}
+            className="font-display font-bold"
+            style={{ fontSize: "clamp(1.9rem, 3.5vw, 2.8rem)", color: "var(--text)", maxWidth: "26ch" }}
           >
             De la operación actual a la automatizada, paso a paso
           </h2>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10 relative">
-          {/* Connector line — desktop only */}
-          <div
-            className="hidden lg:block absolute top-[19px] left-[calc(100%/8)] right-[calc(100%/8)] h-px"
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={isInView ? { scaleX: 1 } : {}}
+            transition={{ duration: 1.2, ease, delay: 0.3 }}
+            className="hidden lg:block absolute top-[19px] left-[calc(100%/8)] right-[calc(100%/8)] h-px origin-left"
             style={{ background: "var(--border)" }}
           />
 
-          {STEPS.map((s, i) => (
-            <div
-              key={s.label}
-              className={`rv${i === 1 ? " d1" : i === 2 ? " d2" : i === 3 ? " d3" : ""} relative z-10`}
-            >
-              {/* Dot */}
-              <div
-                className="w-[38px] h-[38px] rounded-full border flex items-center justify-center mb-6"
-                style={{
-                  background: s.active ? "var(--accent-lt)" : "var(--bg)",
-                  borderColor: s.active ? "var(--accent)" : "var(--border)",
-                }}
+          {STEPS.map((s, i) => {
+            const Icon = s.Icon;
+            return (
+              <motion.div
+                key={s.num}
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, ease, delay: 0.2 + i * 0.1 }}
+                className="relative z-10"
               >
                 <div
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ background: s.active ? "var(--accent)" : "var(--bg-3)" }}
-                />
-              </div>
+                  className="w-[38px] h-[38px] rounded-full border flex items-center justify-center mb-6"
+                  style={{
+                    background: s.active ? "var(--accent-lt)" : "var(--bg)",
+                    borderColor: s.active ? "var(--accent)" : "var(--border)",
+                  }}
+                >
+                  <Icon
+                    size={16}
+                    weight="duotone"
+                    color={s.active ? "var(--accent)" : "var(--text-3)"}
+                  />
+                </div>
 
-              <span
-                className="block font-body text-[0.68rem] font-semibold tracking-[0.08em] uppercase mb-2"
-                style={{ color: "var(--accent)" }}
-              >
-                {s.label}
-              </span>
-              <h3
-                className="font-display font-semibold text-[1rem] mb-2"
-                style={{ color: "var(--text)" }}
-              >
-                {s.title}
-              </h3>
-              <p className="text-sm leading-[1.6]" style={{ color: "var(--text-2)" }}>
-                {s.desc}
-              </p>
-            </div>
-          ))}
+                <span
+                  className="block font-display text-[0.65rem] font-bold tracking-[0.1em] uppercase mb-2"
+                  style={{ color: "var(--accent)" }}
+                >
+                  {s.num}
+                </span>
+                <h3 className="font-display font-semibold mb-2" style={{ fontSize: "1rem", color: "var(--text)" }}>
+                  {s.title}
+                </h3>
+                <p className="text-sm leading-[1.65]" style={{ color: "var(--text-2)" }}>
+                  {s.desc}
+                </p>
+              </motion.div>
+            );
+          })}
         </div>
-
       </div>
     </section>
   );

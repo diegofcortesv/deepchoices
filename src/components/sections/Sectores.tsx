@@ -1,17 +1,19 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
+import { motion, useInView, AnimatePresence } from "motion/react";
 import Image from "next/image";
 
+const ease = [0.16, 1, 0.3, 1] as const;
+
 type Scenario = { title: string; desc: string };
-type Sector = { label: string; id: string; img: string; seed: string; scenarios: Scenario[] };
+type Sector = { label: string; id: string; img: string; scenarios: Scenario[] };
 
 const SECTORES: Sector[] = [
   {
     label: "Gimnasios",
     id: "gym",
     img: "https://picsum.photos/seed/gym-fitness-col/620/465",
-    seed: "gym",
     scenarios: [
       {
         title: "Inscripciones y renovaciones por WhatsApp",
@@ -31,14 +33,13 @@ const SECTORES: Sector[] = [
     label: "Restaurantes",
     id: "rst",
     img: "https://picsum.photos/seed/restaurante-local-col/620/465",
-    seed: "rst",
     scenarios: [
       {
         title: "Reservas sin llamadas",
         desc: "Los clientes reservan mesa por WhatsApp o Instagram. El sistema confirma disponibilidad, envía confirmación y recuerda la reserva con anticipación.",
       },
       {
-        title: "Menu del día y pedidos automatizados",
+        title: "Menú del día y pedidos automatizados",
         desc: "Actualización automática del menú del día en todos los canales. Los pedidos se registran sin que nadie tenga que transcribir nada.",
       },
       {
@@ -51,7 +52,6 @@ const SECTORES: Sector[] = [
     label: "Retail y moda",
     id: "ret",
     img: "https://picsum.photos/seed/tienda-ropa-boutique/620/465",
-    seed: "ret",
     scenarios: [
       {
         title: "Consultas de tallas y disponibilidad",
@@ -71,7 +71,6 @@ const SECTORES: Sector[] = [
     label: "Servicios locales",
     id: "svc",
     img: "https://picsum.photos/seed/servicios-negocio-local/620/465",
-    seed: "svc",
     scenarios: [
       {
         title: "Cotizaciones y seguimiento de propuestas",
@@ -92,18 +91,7 @@ const SECTORES: Sector[] = [
 export function Sectores() {
   const [active, setActive] = useState(0);
   const ref = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const items = el.querySelectorAll<HTMLElement>(".rv");
-    const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); obs.unobserve(e.target); } }),
-      { threshold: 0.1 }
-    );
-    items.forEach((i) => obs.observe(i));
-    return () => obs.disconnect();
-  }, []);
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
 
   const sector = SECTORES[active];
 
@@ -111,21 +99,27 @@ export function Sectores() {
     <section
       id="sectores"
       ref={ref}
-      className="py-24 border-t border-b"
+      className="py-20 lg:py-28 border-t border-b"
       style={{ background: "var(--bg-2)", borderColor: "var(--border)" }}
     >
-      <div className="mx-auto max-w-[1260px] px-9">
+      <div className="mx-auto max-w-[1260px] px-6 sm:px-9">
 
-        <h2
-          className="rv font-display font-bold mb-11 max-w-[26ch]"
-          style={{ fontSize: "clamp(1.8rem, 3.2vw, 2.4rem)", color: "var(--text)" }}
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease }}
+          className="font-display font-bold mb-10"
+          style={{ fontSize: "clamp(1.9rem, 3.5vw, 2.8rem)", color: "var(--text)", maxWidth: "26ch" }}
         >
           Casos reales por industria
-        </h2>
+        </motion.h2>
 
         {/* Tabs */}
-        <div
-          className="rv flex gap-0.5 border-b mb-10 overflow-x-auto scrollbar-hide"
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, ease, delay: 0.1 }}
+          className="flex gap-0.5 border-b mb-10 overflow-x-auto"
           style={{ borderColor: "var(--border)" }}
           role="tablist"
         >
@@ -136,7 +130,7 @@ export function Sectores() {
               aria-selected={active === i}
               aria-controls={`tp-${s.id}`}
               onClick={() => setActive(i)}
-              className="font-body text-[0.875rem] font-medium px-[18px] py-3 border-b-2 mb-[-1px] transition-all duration-200 whitespace-nowrap"
+              className="text-[0.875rem] font-medium px-[18px] py-3 border-b-2 mb-[-1px] transition-all duration-200 whitespace-nowrap"
               style={{
                 color: active === i ? "var(--accent)" : "var(--text-3)",
                 borderBottomColor: active === i ? "var(--accent)" : "transparent",
@@ -145,48 +139,51 @@ export function Sectores() {
               {s.label}
             </button>
           ))}
-        </div>
+        </motion.div>
 
         {/* Panel */}
-        <div
-          id={`tp-${sector.id}`}
-          role="tabpanel"
-          className="rv d1 grid grid-cols-1 md:grid-cols-[5fr_7fr] gap-12 items-start"
-        >
-          {/* Image */}
-          <div className="hidden md:block rounded-[20px] overflow-hidden aspect-[4/3] relative">
-            <Image
-              src={sector.img}
-              alt={sector.label}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 45vw"
-            />
-          </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.4, ease }}
+            id={`tp-${sector.id}`}
+            role="tabpanel"
+            className="grid grid-cols-1 md:grid-cols-[5fr_7fr] gap-12 items-start"
+          >
+            <div className="hidden md:block rounded-2xl overflow-hidden aspect-[4/3] relative">
+              <Image
+                src={sector.img}
+                alt={sector.label}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 45vw"
+              />
+            </div>
 
-          {/* Scenarios */}
-          <div>
-            {sector.scenarios.map((sc, i) => (
-              <div
-                key={sc.title}
-                className="py-6"
-                style={{
-                  borderBottom: i < sector.scenarios.length - 1 ? "1px solid var(--border-2)" : undefined,
-                }}
-              >
-                <h3
-                  className="font-display text-[0.95rem] font-semibold mb-1.5"
-                  style={{ color: "var(--text)" }}
+            <div>
+              {sector.scenarios.map((sc, i) => (
+                <div
+                  key={sc.title}
+                  className="py-6"
+                  style={{ borderBottom: i < sector.scenarios.length - 1 ? "1px solid var(--border-2)" : undefined }}
                 >
-                  {sc.title}
-                </h3>
-                <p className="text-sm leading-[1.6]" style={{ color: "var(--text-2)" }}>
-                  {sc.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+                  <h3
+                    className="font-display font-semibold mb-1.5"
+                    style={{ fontSize: "0.97rem", color: "var(--text)" }}
+                  >
+                    {sc.title}
+                  </h3>
+                  <p className="text-sm leading-[1.65]" style={{ color: "var(--text-2)" }}>
+                    {sc.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </AnimatePresence>
 
       </div>
     </section>
