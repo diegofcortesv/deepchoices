@@ -17,7 +17,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://deepchoices.co"),
+  metadataBase: new URL("https://deepchoices.com"),
   title: {
     default: "DeepChoices — Automatización e Inteligencia para Pymes",
     template: "%s | DeepChoices",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     "software gimnasios",
     "agendamiento automatico",
   ],
-  authors: [{ name: "DeepChoices", url: "https://deepchoices.co" }],
+  authors: [{ name: "DeepChoices", url: "https://deepchoices.com" }],
   openGraph: {
     type: "website",
     locale: "es_CO",
