@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/* ================================================================
+   DESIGN TOKENS
+   taste-skill: DESIGN_VARIANCE:6 | MOTION_INTENSITY:4 | VISUAL_DENSITY:4
+   Palette: stone warm + teal profundo. No purple/cyan/AI glow.
+   Fonts: Outfit (display) + DM Sans (body).
+================================================================ */
+
+/* ----------------------------------------------------------------
+   SEMANTIC COLOR TOKENS
+---------------------------------------------------------------- */
+:root,
+[data-theme="light"] {
+  --bg:        #F5F3EF;
+  --bg-2:      #EDEBE6;
+  --bg-3:      #E5E2DB;
+  --surface:   #FAFAF7;
+  --text:      #1C1B18;
+  --text-2:    #5A5953;
+  --text-3:    #8A8880;
+  --accent:    #1A5C52;
+  --accent-dk: #124540;
+  --accent-lt: #EAF3F1;
+  --border:    #D9D6CF;
+  --border-2:  #E8E5DE;
+}
+
+[data-theme="dark"] {
+  --bg:        #111210;
+  --bg-2:      #191917;
+  --bg-3:      #212120;
+  --surface:   #1C1C1A;
+  --text:      #F0EFE9;
+  --text-2:    #A6A5A0;
+  --text-3:    #686762;
+  --accent:    #2A8272;
+  --accent-dk: #36A090;
+  --accent-lt: #192B28;
+  --border:    #2A2A28;
+  --border-2:  #242422;
+}
+
+/* ----------------------------------------------------------------
+   BASE
+---------------------------------------------------------------- */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "DM Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Outfit", system-ui, sans-serif;
+  letter-spacing: -0.022em;
+  line-height: 1.12;
+}
+
+/* ----------------------------------------------------------------
+   SCROLL REVEAL
+---------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .rv {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity   0.55s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .rv.in { opacity: 1; transform: none; }
+  .rv.d1 { transition-delay: 0.08s; }
+  .rv.d2 { transition-delay: 0.16s; }
+  .rv.d3 { transition-delay: 0.24s; }
+}
+
+/* Hero node pulse */
+@media (prefers-reduced-motion: no-preference) {
+  .np1 { animation: npa 3.2s ease-in-out infinite; }
+  .np2 { animation: npa 3.2s ease-in-out 1.1s infinite; }
+  .np3 { animation: npa 3.2s ease-in-out 2.1s infinite; }
+
+  @keyframes npa {
+    0%, 100% { opacity: 0.45; }
+    50%       { opacity: 1; }
+  }
+}
